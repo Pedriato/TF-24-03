@@ -1,0 +1,35 @@
+services:
+  postgres:
+    build:
+      context: .//TF-20-03/infra
+      dockerfile: Dockerfile
+    container_name: postgres-container
+    environment:
+      POSTGRES_DB: escola
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: senha123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - cluster-network
+
+  api:
+    build:
+      context: .//TF-20-03/app
+      dockerfile: Dockerfile
+    container_name: flask-api-container
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres
+    networks:
+      - cluster-network
+
+volumes:
+  postgres_data:
+
+networks:
+  cluster-network:
+    driver: bridge
